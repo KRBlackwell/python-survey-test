@@ -4,8 +4,12 @@ import os
 import ray
 import pyreadstat
 from datetime import datetime
+import performance as perf
 
 if __name__ == "__main__":
+    datain = datain.Datain()
+    p = perf.Performance()
+
     now = datetime.now()
 
     current_time = now.strftime("%H:%M:%S")
@@ -31,6 +35,7 @@ if __name__ == "__main__":
     
     # #works on local machine
     df1 = datain.how_read_data("pandas",filenam,chunksize,iterator,varlist,"ppm")
+    # logic.hh_dis(df1)
     datain.print_df_info(df1)
     
     # #dashboard http://127.0.0.1:8265
@@ -83,13 +88,13 @@ if __name__ == "__main__":
     writethis="pyreadstat"+"|"+filenam+"|"+str(rowlim)+"|0|N/A|"+str(varlist)+"|"
     file1.write(writethis)
     file1.close()    
-    datain.tracing_start()
+    p.tracing_start()
     start = time.time()
     df9, meta = pyreadstat.read_sas7bdat(filenam, usecols=varlist, disable_datetime_conversion=True, row_offset=0, row_limit=rowlim)
     end = time.time()
     elapsed = (end-start)*1000
     print("time elapsed {} milli seconds".format(elapsed))
-    peak = datain.tracing_memory()
+    peak = p.tracing_memory()
     #put time results in a file
     file1 = open("performance.txt", "a")
     writethis="|"+str(round(elapsed,2))+"|"+str(round(peak,2))+"\n"
@@ -97,7 +102,8 @@ if __name__ == "__main__":
     file1.close()
     
     datain.print_df_info(df9)
-
+    
+    
     later = datetime.now()
     later_time = later.strftime("%H:%M:%S")
     print("End Time =", later_time)
